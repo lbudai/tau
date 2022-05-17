@@ -442,7 +442,8 @@ static inline int tauShouldDecomposeMacro(char const* actual, char const* expect
     // name/expression (i.e for a value, we search through each character verifying that each is a digit
     // - for floats, we allow a maximum of 1 '.' char)
     if(!isStringCmp) {
-        for(int i = 0; i < strlen(actual); i++) {
+        int i = 0;
+        for(i = 0; i < strlen(actual); i++) {
             if(tauIsDigit(actual[i])) {
                 numActualDigits++;
             } else if(actual[i] == '.') {
@@ -454,7 +455,7 @@ static inline int tauShouldDecomposeMacro(char const* actual, char const* expect
         }
         // Do the same for `expected`
         dots = 0;
-        for(int i=0; i < strlen(expected); i++) {
+        for(i=0; i < strlen(expected); i++) {
             if(tauIsDigit(expected[i])) {
                 numExpectedDigits++;
             } else if(expected[i] == '.') {
@@ -637,12 +638,13 @@ static void tauPrintColouredIfDifferent(tau_u8 ch, tau_u8 ref) {
 static void tauPrintHexBufCmp(void* buff, void* ref, int size) {
     tau_u8* test_buff = TAU_CAST(tau_u8*, buff);
     tau_u8* ref_buff = TAU_CAST(tau_u8*, ref);
+    int i = 0;
 
     tauColouredPrintf(TAU_COLOUR_CYAN_,"<");
     if(size != 0)
         tauPrintColouredIfDifferent(test_buff[0], ref_buff[0]);
 
-    for(int i = 1; i < size; ++i) {
+    for(i = 1; i < size; ++i) {
         printf(" ");
         tauPrintColouredIfDifferent(test_buff[i], ref_buff[i]);
     }
@@ -999,6 +1001,7 @@ static void tau_help_() {
 
 
 static tau_bool tauCmdLineRead(int argc, char** argv) {
+    tau_ull i = 0;
     // Coloured output
 #ifdef TAU_UNIX_
     tauShouldColourizeOutput = isatty(STDOUT_FILENO);
@@ -1013,7 +1016,7 @@ static tau_bool tauCmdLineRead(int argc, char** argv) {
 #endif // TAU_UNIX_
 
     // loop through all arguments looking for our options
-    for(tau_ull i = 1; i < TAU_CAST(tau_ull, argc); i++) {
+    for(i = 1; i < TAU_CAST(tau_ull, argc); i++) {
         /* Informational switches */
         const char* helpStr = "--help";
         const char* listStr = "--list";
@@ -1070,7 +1073,8 @@ static tau_bool tauCmdLineRead(int argc, char** argv) {
 }
 
 static int tauCleanup() {
-    for (tau_ull i = 0; i < tauTestContext.numTestSuites; i++)
+    tau_ull i = 0;
+    for (i = 0; i < tauTestContext.numTestSuites; i++)
         free(TAU_PTRCAST(void* , tauTestContext.tests[i].name));
 
     free(TAU_PTRCAST(void* , tauStatsFailedTestSuites));
@@ -1084,8 +1088,9 @@ static int tauCleanup() {
 
 // Triggers and runs all unit tests
 static void tauRunTests() {
+    tau_ull i = 0;
     // Run tests
-    for(tau_ull i = 0; i < tauTestContext.numTestSuites; i++) {
+    for(i = 0; i < tauTestContext.numTestSuites; i++) {
         checkIsInsideTestSuite = 1;
         hasCurrentTestFailed = 0;
 
@@ -1141,6 +1146,7 @@ static inline int tau_main(int argc, char** argv);
 inline int tau_main(int argc, char** argv) {
     tauStatsTotalTestSuites = TAU_CAST(tau_u64, tauTestContext.numTestSuites);
     tau_argv0_ = argv[0];
+    tau_ull i = 0;
 
     // Start the entire Test Session timer
     double start = tauClock();
@@ -1149,7 +1155,7 @@ inline int tau_main(int argc, char** argv) {
     if(!wasCmdLineReadSuccessful)
         return tauCleanup();
 
-    for (tau_ull i = 0; i < tauTestContext.numTestSuites; i++) {
+    for (i = 0; i < tauTestContext.numTestSuites; i++) {
         if(tauShouldFilterTest(cmd_filter, tauTestContext.tests[i].name))
             tauStatsSkippedTests++;
     }
@@ -1195,6 +1201,7 @@ inline int tau_main(int argc, char** argv) {
     }
 
     if(tauStatsNumTestsFailed > 0) {
+        tau_ull i = 0;
         tauColouredPrintf(TAU_COLOUR_BRIGHTRED_, "FAILED: ");
         printf("%" TAU_PRIu64 " failed, %" TAU_PRIu64 " passed in ",
                             tauStatsNumTestsFailed,
@@ -1202,7 +1209,7 @@ inline int tau_main(int argc, char** argv) {
         tauClockPrintDuration(duration);
         printf("\n");
 
-        for (tau_ull i = 0; i < tauStatsNumFailedTestSuites; i++) {
+        for (i = 0; i < tauStatsNumFailedTestSuites; i++) {
             tauColouredPrintf(TAU_COLOUR_BRIGHTRED_, "  [ FAILED ] %s\n",
                             tauTestContext.tests[tauStatsFailedTestSuites[i]].name);
         }
