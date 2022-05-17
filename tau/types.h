@@ -19,7 +19,8 @@ Copyright (c) 2021 Jason Dsouza <@jasmcaus>
 // Simple assertion checks (that don't require a message to STDOUT).
 // Condition failure raises a compilation error (negative index) --> 0*2 == 0 + (-1) == -1!
 // This macro is intended only for this file (tau/types.h)
-#define TAU_STAT_ASSERT1__(cond, line)      typedef char static_assertion_at_line_##line[(!!(cond))*2-1]
+#define TAU_STAT_ASSERT2__(cond, line)      typedef char static_assertion_at_line_##line[(!!(cond))*2-1]
+#define TAU_STAT_ASSERT1__(cond, line)      TAU_STAT_ASSERT2__(cond, line)
 #define TAU_STATIC_ASSERT(cond)             TAU_STAT_ASSERT1__(cond, __LINE__)
 
 // Base types
@@ -80,8 +81,13 @@ typedef tau_i32 tau_bool32; // Prefer this!
         typedef tau_i64   tau_ll;
     #endif // _WIN64
 #else
-    typedef tau_u64  tau_ull;
-    typedef tau_i64   tau_ll;
+    #if !defined(__LP64__)
+        typedef unsigned int tau_ull;
+        typedef int tau_ll;
+    #else
+        typedef tau_u64  tau_ull;
+        typedef tau_i64   tau_ll;
+    #endif
 #endif // _MSC_VER
 
 // (U)Intptr is only here for semantic reasons really as this library will only support 32/64 bit OSes.
